@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StartController;
 use App\Http\Controllers\PlaceShipController;
+use App\Http\Controllers\ClearFieldController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,6 @@ use App\Http\Controllers\PlaceShipController;
 Route::post('/start', [StartController::class, 'newGame']);
 
 Route::post('/place-ship/{id}/{code}', [PlaceShipController::class, 'action']);
+
+Route::post('/clear-field/{id}/{code}', [ClearFieldController::class, 'action']);
+

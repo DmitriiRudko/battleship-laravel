@@ -10,17 +10,25 @@ use App\Models\UserModel;
 
 class StartController extends Controller {
     public function newGame(): JsonResponse {
-        $userModel = new UserModel();
-        $initiator = $userModel->newUser();
-        $invited = $userModel->newUser();
+        $initiator = new UserModel();
+        $invited   = new UserModel();
+        $game      = new GameModel();
 
-        $game = new GameModel();
-        $gameId = $game->newGame($initiator['id'], $invited['id']);
+        $initiator->code = uniqid();
+        $initiator->saveOrFail();
+
+        $invited->code = uniqid();
+        $invited->saveOrFail();
+
+        $game->initiator_id = $initiator->id;
+        $game->invited_id   = $invited->id;
+        $game->turn         = [$initiator->id, $invited->id][random_int(0, 1)];
+        $game->saveOrFail();
 
         $gameInfo = [
-            'id' => $gameId,
-            'code' => $initiator['code'],
-            'invited' => $invited['code'],
+            'id'      => $game->id,
+            'code'    => $initiator->code,
+            'invited' => $invited->code,
             'success' => true,
         ];
 
