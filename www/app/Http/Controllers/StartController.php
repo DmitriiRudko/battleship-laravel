@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\GameModel;
 use App\Models\UserModel;
+use Illuminate\Support\Facades\Auth;
 
 class StartController extends Controller {
     public function newGame(): JsonResponse {

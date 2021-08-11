@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ApiRequest;
 use App\Models\MessageModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller {
-    public function loadMessages(Request $request): JsonResponse {
+    public function loadMessages(ApiRequest $request): JsonResponse {
         $timeNow = time();
         $user    = Auth::user();
 
@@ -35,7 +36,7 @@ class ChatController extends Controller {
         return response()->json($messages);
     }
 
-    public function sendMessage($id, Request $request): JsonResponse {
+    public function sendMessage($id, ApiRequest $request): JsonResponse {
         $user = Auth::user();
 
         $message          = new MessageModel();

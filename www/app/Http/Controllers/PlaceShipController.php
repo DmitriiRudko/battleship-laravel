@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ApiRequest;
 use App\Models\UserModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class PlaceShipController extends Controller {
     public function placeShip(int $id, string $ship, string $orientation, int $x, int $y): JsonResponse {
         /*ВАЛИДАЦИЯ*/
-        $user   = Auth::user();
+        $user = Auth::user();
         $user->messagesScope(1628656851);
         $size   = (int)explode('-', $ship)[0];
         $number = (int)explode('-', $ship)[1];
@@ -29,8 +30,16 @@ class PlaceShipController extends Controller {
         return response()->json(['success' => true]);
     }
 
-    public function action(int $id, Request $request): JsonResponse {
+    public function action(int $id, ApiRequest $request): JsonResponse {
+        $request->validate([
+            'x'           => 'digits_between:0,9|required',
+            'y'           => 'digits_between:0,9|required',
+            'orientation' => 'in:vertical,horizontal|required',
+            'ship'        => 'regex:[1-4]-[1-4]|required',
+        ]);
+
         extract($request->post());
+
         if ($request->post('ships')) {
             parse_str(urldecode($ships), $ships);
             $ships = array_shift($ships);
@@ -55,7 +64,7 @@ class PlaceShipController extends Controller {
 
     public function removeShip(int $id, string $ship): JsonResponse {
         /*ВАЛИДАЦИЯ*/
-        $user = Auth::user();
+        $user   = Auth::user();
         $size   = (int)explode('-', $ship)[0];
         $number = (int)explode('-', $ship)[1];
 

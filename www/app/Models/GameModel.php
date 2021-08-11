@@ -30,6 +30,10 @@ class GameModel extends Model {
 
     protected $table = 'games';
 
+    public const GAME_HAS_BEGUN_STATUS = 2;
+
+    public const GAME_OVER_STATUS = 3;
+
     public function invited() {
         return $this->belongsTo(UserModel::class, 'invited_id');
     }

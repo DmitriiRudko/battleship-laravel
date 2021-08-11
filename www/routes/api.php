@@ -19,4 +19,3 @@ Route::post('/ready/{id}/{code}', [UserReadyController::class, 'getUserReady']);
 Route::get('/chat-load/{id}/{code}', [ChatController::class, 'loadMessages']);
 
 Route::post('/chat-send/{id}/{code}', [ChatController::class, 'sendMessage']);
-
