@@ -12,6 +12,7 @@ class PlaceShipController extends Controller {
     public function placeShip(int $id, string $ship, string $orientation, int $x, int $y): JsonResponse {
         /*ВАЛИДАЦИЯ*/
         $user   = Auth::user();
+        $user->messagesScope(1628656851);
         $size   = (int)explode('-', $ship)[0];
         $number = (int)explode('-', $ship)[1];
         /*ПРОВЕРКА*/

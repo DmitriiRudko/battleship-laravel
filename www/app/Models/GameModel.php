@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use GuzzleHttp\Psr7\Message;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -29,16 +30,19 @@ class GameModel extends Model {
 
     protected $table = 'games';
 
-    public function newGame(int $initiatorId, int $invitedId): int {
-        $turn = random_int(0, 1);
-        $turn = [$initiatorId, $invitedId][$turn];
+    public function invited() {
+        return $this->belongsTo(UserModel::class, 'invited_id');
+    }
 
-        $gameId = DB::table('games')->insertGetId([
-            'initiator_id' => $initiatorId,
-            'invited_id' => $invitedId,
-            'turn' => $turn,
-        ]);
+    public function initiator() {
+        return $this->belongsTo(UserModel::class, 'initiator_id');
+    }
 
-        return $gameId;
+    public function messages() {
+        return $this->hasMany(MessageModel::class, 'game_id')->orderBy('time', 'asc');
+    }
+
+    public function scopeMessages($timestamp) {
+        return $this->messages()->where('time', '>', date('Y-m-d h:i:s', $timestamp))->get();
     }
 }

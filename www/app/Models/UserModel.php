@@ -27,6 +27,7 @@ class UserModel extends Model {
 
     protected $table = 'users';
 
+    public const READY_STATUS = 1;
 
     public function getUserInfoByCode($code): array {
         $userInfo = (array)DB::table('users')->where('code', $code)->first();
@@ -36,7 +37,19 @@ class UserModel extends Model {
 
     public function getGameAttribute() {
         $result = array_filter([$this->gameByInitiator, $this->gameByInvited]);
+
         return array_shift($result);
+    }
+
+    public function getEnemyAttribute() {
+        switch ($this->id) {
+            case $this->game->invited_id:
+                return $this->game->initiator;
+            case $this->game->initiator_id:
+                return $this->game->invited;
+        }
+
+        return $this->hasOne(GameModel::class, 'invited_id');
     }
 
     public function gameByInitiator() {
@@ -49,5 +62,9 @@ class UserModel extends Model {
 
     public function ships() {
         return $this->hasMany(ShipModel::class, 'user_id');
+    }
+
+    public function shots() {
+        return $this->hasMany(ShotModel::class, 'user_id');
     }
 }
