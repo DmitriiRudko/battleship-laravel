@@ -2,42 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ApiRequest;
-use App\Models\UserModel;
+use App\Http\Requests\PlaceShipRequest;
+use App\Services\PlaceShip\PlaceShipService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Models\ShipModel;
 use Illuminate\Support\Facades\Auth;
 
 class PlaceShipController extends Controller {
-    public function placeShip(int $id, string $ship, string $orientation, int $x, int $y): JsonResponse {
-        /*ВАЛИДАЦИЯ*/
-        $user = Auth::user();
-        $user->messagesScope(1628656851);
-        $size   = (int)explode('-', $ship)[0];
-        $number = (int)explode('-', $ship)[1];
-        /*ПРОВЕРКА*/
-        $shipModel              = new shipModel();
-        $shipModel->game_id     = $id;
-        $shipModel->user_id     = $user->id;
-        $shipModel->x           = $x;
-        $shipModel->y           = $y;
-        $shipModel->size        = $size;
-        $shipModel->number      = $number;
-        $shipModel->orientation = $orientation;
-        $shipModel->saveOrFail();
-
-        return response()->json(['success' => true]);
-    }
-
-    public function action(int $id, ApiRequest $request): JsonResponse {
-        $request->validate([
-            'x'           => 'digits_between:0,9|required',
-            'y'           => 'digits_between:0,9|required',
-            'orientation' => 'in:vertical,horizontal|required',
-            'ship'        => 'regex:[1-4]-[1-4]|required',
-        ]);
-
+    public function action(int $id, PlaceShipRequest $request): JsonResponse {
         extract($request->post());
 
         if ($request->post('ships')) {
@@ -52,8 +24,33 @@ class PlaceShipController extends Controller {
         }
     }
 
+    public function placeShip(int $id, string $ship, string $orientation, int $x, int $y): JsonResponse {
+        $user   = Auth::user();
+        $size   = (int)explode('-', $ship)[0];
+        $number = (int)explode('-', $ship)[1];
+
+        if (!PlaceShipService::isShipValid($size, $number, $x, $y, $orientation, $user->id, $user->game->id, $user->ships)) {
+            return response()->json([
+                'success' => false,
+                'error'   => 400,
+                'message' => 'Ship is unable to place here',
+            ]);
+        }
+
+        $shipModel              = new shipModel();
+        $shipModel->game_id     = $id;
+        $shipModel->user_id     = $user->id;
+        $shipModel->x           = $x;
+        $shipModel->y           = $y;
+        $shipModel->size        = $size;
+        $shipModel->number      = $number;
+        $shipModel->orientation = $orientation;
+        $shipModel->saveOrFail();
+
+        return response()->json(['success' => true]);
+    }
+
     public function placeManyShips(int $id, array $ships): JsonResponse {
-        /*ВАЛИДАЦИЯ*/
         foreach ($ships as $shipElement) {
             extract($shipElement);
             $this->placeShip($id, $ship, $orientation, $x, $y);
@@ -63,7 +60,6 @@ class PlaceShipController extends Controller {
     }
 
     public function removeShip(int $id, string $ship): JsonResponse {
-        /*ВАЛИДАЦИЯ*/
         $user   = Auth::user();
         $size   = (int)explode('-', $ship)[0];
         $number = (int)explode('-', $ship)[1];

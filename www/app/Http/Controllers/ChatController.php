@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ApiRequest;
 use App\Models\MessageModel;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller {

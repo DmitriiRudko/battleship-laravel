@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'custom',
+        'guard'     => 'custom',
         'passwords' => 'users',
     ],
 
@@ -37,19 +37,19 @@ return [
 
     'guards' => [
         'web' => [
-            'driver' => 'session',
+            'driver'   => 'session',
             'provider' => 'users',
         ],
 
-        'api' => [
-            'driver' => 'token',
+        'api'    => [
+            'driver'   => 'token',
             'provider' => 'users',
-            'hash' => false,
+            'hash'     => false,
         ],
         'custom' => [
-            'driver' => 'custom_token',
+            'driver'   => 'custom_token',
             'provider' => 'users',
-            'key' => 'code'
+            'key'      => 'code',
         ],
     ],
 
@@ -73,8 +73,8 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\UserModel::class,
-            'table' => 'users',
+            'model'  => App\Models\UserModel::class,
+            'table'  => 'users',
         ],
     ],
 
@@ -96,8 +96,8 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => 'password_resets',
-            'expire' => 60,
+            'table'    => 'password_resets',
+            'expire'   => 60,
             'throttle' => 60,
         ],
     ],

@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Models\GameModel;
+use App\Models\UserModel;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use phpDocumentor\Reflection\Types\This;
 
-class ApiRequest extends FormRequest {
+class ShootRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +15,9 @@ class ApiRequest extends FormRequest {
      */
     public function authorize() {
         if (Auth::user()) {
-            return Auth::user()->game->id === (int)$this->id;
+            return Auth::user()->game->id === (int)$this->id
+                && Auth::user()->game->turn === Auth::user()->id
+                && Auth::user()->game->status === GameModel::GAME_HAS_BEGUN_STATUS;
         } else {
             return false;
         }
@@ -27,8 +30,8 @@ class ApiRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'id'   => 'numeric',
-            'code' => 'alpha_num|size:13',
+            'x' => 'digits_between:0,9|required',
+            'y' => 'digits_between:0,9|required',
         ];
     }
 }

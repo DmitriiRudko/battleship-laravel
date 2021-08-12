@@ -25,7 +25,8 @@ class ShipId implements Rule
      */
     public function passes($attribute, $value)
     {
-        preg_match('[1-4]-[1-4]', $value);
+        $sum = (int)explode('-', $value)[0] + (int)explode('-', $value)[1];
+        return preg_match('/[1-4]-[1-4]/', $value) && ($sum <= 5);
     }
 
     /**
@@ -35,6 +36,6 @@ class ShipId implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'Wrong ship ID';
     }
 }
