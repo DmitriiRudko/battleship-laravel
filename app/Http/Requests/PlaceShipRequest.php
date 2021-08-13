@@ -15,13 +15,7 @@ class PlaceShipRequest extends FormRequest {
      * @return bool
      */
     public function authorize() {
-        if (Auth::user()) {
-            return Auth::user()->game->id === (int)$this->id
-                && Auth::user()->ready === UserModel::NOT_READY_STATUS
-                && Auth::user()->game->status === GameModel::GAME_HAS_NOT_BEGUN_STATUS;
-        } else {
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -37,6 +31,8 @@ class PlaceShipRequest extends FormRequest {
             return [
                 'x' => 'digits_between:0,9|required',
                 'y' => 'digits_between:0,9|required',
+                'orientation' => 'in:vertical,horizontal',
+                'ship' => [new ShipId, 'required'],
             ];
         } else {
             return [

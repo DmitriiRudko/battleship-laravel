@@ -1,18 +1,18 @@
-<?
+<?php
 
 namespace App\Services\PlaceShip;
 
-
 use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\DocBlock\Tags\BaseTag;
 
 class PlaceShipService {
-    public static function isShipValid(int $shipSize, int $shipNumber, int $x, int $y, string $orientation, int $userId, int $gameId, $ships) {
-        return self::isShipExist($shipSize, $shipNumber, $ships, $userId, $gameId)
-            && self::isShipFitsTheField($shipSize, $x, $y, $orientation)
-            && self::isShipFitsOtherShips($shipSize, $x, $y, $orientation, $ships);
+    public function isShipValid(int $shipSize, int $shipNumber, int $x, int $y, string $orientation, int $userId, int $gameId, $ships): bool {
+        return !$this->isShipExist($shipSize, $shipNumber, $ships, $userId, $gameId)
+            && $this->isShipFitsTheField($shipSize, $x, $y, $orientation)
+            && $this->isShipFitsOtherShips($shipSize, $x, $y, $orientation, $ships);
     }
 
-    public static function isShipExist(int $shipSize, int $shipNumber, $ships, $userId, $gameId) {
+    public function isShipExist(int $shipSize, int $shipNumber, $ships, $userId, $gameId): bool {
         $sameShip = $ships->where('game_id', $gameId)
             ->where('user_id', $userId)
             ->where('size', $shipSize)
@@ -21,7 +21,7 @@ class PlaceShipService {
         return !is_null($sameShip);
     }
 
-    public static function isShipFitsTheField(int $shipSize, int $x, int $y, string $orientation) {
+    public function isShipFitsTheField(int $shipSize, int $x, int $y, string $orientation): bool {
         $result = ($x >= 0) && ($y >= 0) && ($x <= 9) && ($y <= 9);
         switch ($orientation) {
             case 'horizontal':
@@ -33,7 +33,7 @@ class PlaceShipService {
         }
     }
 
-    public static function isShipFitsOtherShips(int $shipSize, int $x, int $y, string $orientation, $ships) {
+    public function isShipFitsOtherShips(int $shipSize, int $x, int $y, string $orientation, $ships): bool {
         $field = array_fill(0, 10, array_fill(0, 10, 0));
 
         switch ($orientation) {

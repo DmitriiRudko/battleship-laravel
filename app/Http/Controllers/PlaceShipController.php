@@ -9,15 +9,26 @@ use App\Models\ShipModel;
 use Illuminate\Support\Facades\Auth;
 
 class PlaceShipController extends Controller {
+
+    private PlaceShipService $placeShipService;
+
+    public function __construct(PlaceShipService $placeShipService) {
+        $this->placeShipService = $placeShipService;
+    }
+
     public function action(int $id, PlaceShipRequest $request): JsonResponse {
-        extract($request->post());
+        $ships       = $request->post('ships');
+        $ship        = $request->post('ship');
+        $x           = $request->post('x');
+        $y           = $request->post('y');
+        $orientation = $request->post('orientation');
 
         if ($request->post('ships')) {
             parse_str(urldecode($ships), $ships);
             $ships = array_shift($ships);
 
             return $this->placeManyShips($id, $ships);
-        } elseif ($request->post('x') && $request->post('y')) {
+        } elseif (isset($x, $y)) {
             return $this->placeShip($id, $ship, $orientation, $x, $y);
         } else {
             return $this->removeShip($id, $ship);
@@ -29,7 +40,7 @@ class PlaceShipController extends Controller {
         $size   = (int)explode('-', $ship)[0];
         $number = (int)explode('-', $ship)[1];
 
-        if (!PlaceShipService::isShipValid($size, $number, $x, $y, $orientation, $user->id, $user->game->id, $user->ships)) {
+        if (!$this->placeShipService->isShipValid($size, $number, $x, $y, $orientation, $user->id, $user->game->id, $user->ships)) {
             return response()->json([
                 'success' => false,
                 'error'   => 400,
@@ -37,22 +48,17 @@ class PlaceShipController extends Controller {
             ]);
         }
 
-        $shipModel              = new shipModel();
-        $shipModel->game_id     = $id;
-        $shipModel->user_id     = $user->id;
-        $shipModel->x           = $x;
-        $shipModel->y           = $y;
-        $shipModel->size        = $size;
-        $shipModel->number      = $number;
-        $shipModel->orientation = $orientation;
-        $shipModel->saveOrFail();
+        ShipModel::newShip($id, $user->id, $x, $y, $size, $number, $orientation);
 
         return response()->json(['success' => true]);
     }
 
     public function placeManyShips(int $id, array $ships): JsonResponse {
         foreach ($ships as $shipElement) {
-            extract($shipElement);
+            $ship        = $shipElement->post('ship');
+            $x           = $shipElement->post('x');
+            $y           = $shipElement->post('y');
+            $orientation = $shipElement->post('orientation');
             $this->placeShip($id, $ship, $orientation, $x, $y);
         }
 
