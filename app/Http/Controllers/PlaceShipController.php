@@ -91,9 +91,9 @@ class PlaceShipController extends Controller {
     public function turn(ShipModel $ship, string $newOrientation, $x, $y): JsonResponse {
         $user = Auth::user();
 
-        $shipsExclideThis = $user->ships->where('id', '!=', $ship->id);
+        $shipsExcludeThis = $user->ships->where('id', '!=', $ship->id);
 
-        if (!$this->placeShipService->isShipValid($ship->size, $ship->number, $x, $y, $newOrientation, $user->id, $user->game->id, $shipsExclideThis)) {
+        if (!$this->placeShipService->isShipValid($ship->size, $ship->number, $x, $y, $newOrientation, $user->id, $user->game->id, $shipsExcludeThis)) {
             return response()->json([
                 'success' => false,
                 'error'   => 400,
