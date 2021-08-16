@@ -35,7 +35,7 @@ class PlaceShipController extends Controller {
             if (is_null($sameShip)) {
                 return $this->placeShip($id, $ship, $orientation, $x, $y);
             } else {
-                return $this->turn($sameShip, $orientation);
+                return $this->turn($sameShip, $orientation, $x, $y);
             }
 
         } else {
@@ -88,12 +88,12 @@ class PlaceShipController extends Controller {
         return response()->json(['success' => true]);
     }
 
-    public function turn(ShipModel $ship, string $newOrientation): JsonResponse {
+    public function turn(ShipModel $ship, string $newOrientation, $x, $y): JsonResponse {
         $user = Auth::user();
 
         $shipsExclideThis = $user->ships->where('id', '!=', $ship->id);
 
-        if (!$this->placeShipService->isShipValid($ship->size, $ship->number, $ship->x, $ship->y, $newOrientation, $user->id, $user->game->id, $shipsExclideThis)) {
+        if (!$this->placeShipService->isShipValid($ship->size, $ship->number, $x, $y, $newOrientation, $user->id, $user->game->id, $shipsExclideThis)) {
             return response()->json([
                 'success' => false,
                 'error'   => 400,
@@ -102,6 +102,9 @@ class PlaceShipController extends Controller {
         }
 
         $ship->orientation = $newOrientation;
+        $ship->x = $x;
+        $ship->y = $y;
+
         $ship->saveOrFail();
 
         return response()->json(['success' => true]);
