@@ -18,7 +18,7 @@ class ShootController extends Controller {
 
     public function shoot(int $id, ShootRequest $request): JsonResponse {
         $user = Auth::user();
-        if ($user->game->turn !== $user->id) {
+        if ($user->game->turn !== $user->id || $user->game->status === GameModel::GAME_HAS_NOT_BEGUN_STATUS) {
             return response()->json([
                 'success' => false,
                 'error'   => 400,
