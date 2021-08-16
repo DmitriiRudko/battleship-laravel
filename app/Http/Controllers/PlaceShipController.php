@@ -26,15 +26,18 @@ class PlaceShipController extends Controller {
 
         if ($request->post('ships')) {
             return $this->placeManyShips($id, $ships);
+
         } elseif (isset($x, $y)) {
             $size     = (int)explode('-', $ship)[0];
             $number   = (int)explode('-', $ship)[1];
             $sameShip = $user->ships->where('size', $size)->firstWhere('number', $number);
+
             if (is_null($sameShip)) {
                 return $this->placeShip($id, $ship, $orientation, $x, $y);
             } else {
                 return $this->turn($sameShip, $orientation);
             }
+
         } else {
             return $this->removeShip($id, $ship);
         }
@@ -88,6 +91,7 @@ class PlaceShipController extends Controller {
     public function turn(ShipModel $ship, string $newOrientation): JsonResponse {
         $ship->orientation = $newOrientation;
         $ship->saveOrFail();
+
         return response()->json(['success' => true]);
     }
 }

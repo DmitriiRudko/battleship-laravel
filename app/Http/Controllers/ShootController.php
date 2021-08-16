@@ -52,14 +52,17 @@ class ShootController extends Controller {
             if (!$this->shootService->shipHealth($shootResult, $shots)) {
                 $this->shootAroundShip($shootResult);
             }
+
             $total_health = array_reduce(iterator_to_array($user->enemy->ships), function ($carry, $item) use ($shots) {
                 $carry += $this->shootService->shipHealth($item, $shots);
                 return $carry;
             }, 0);
+
             if (!$total_health) {
                 $user->game->status = GameModel::GAME_OVER_STATUS;
                 $user->game->saveOrFail();
             }
+
         } else {
             $user->game->turn = $user->enemy->id;
             $user->game->saveOrFail();
@@ -90,14 +93,17 @@ class ShootController extends Controller {
                         ShotModel::newShot($ship->x + 1, $i, $user->game->id, $user->id);
                     }
                 }
+
                 if (!$user->shots->where('x', $ship->x)->firstWhere('y', $ship->y - 1) && ($ship->y - 1) >= 0) {
                     ShotModel::newShot($ship->x, $ship->y - 1, $user->game->id, $user->id);
                 }
+
                 if (!$user->shots->where('x', $ship->x)
                         ->firstWhere('y', $ship->y + $ship->size) && ($ship->y + $ship->size) <= 9) {
                     ShotModel::newShot($ship->x, $ship->y + $ship->size, $user->game->id, $user->id);
                 }
                 break;
+
             case 'horizontal':
                 for ($j = $ship->x - 1; $j <= $ship->x + $ship->size; $j++) {
                     if (!$user->shots->where('y', $ship->y - 1)->firstWhere('x', $j)
@@ -116,9 +122,11 @@ class ShootController extends Controller {
                         ShotModel::newShot($j, $ship->y + 1, $user->game->id, $user->id);
                     }
                 }
+
                 if (!$user->shots->where('y', $ship->y)->firstWhere('x', $ship->x - 1) && ($ship->x - 1) >= 0) {
                     ShotModel::newShot($ship->x - 1, $ship->y, $user->game->id, $user->id);
                 }
+
                 if (!$user->shots->where('y', $ship->y)
                         ->firstWhere('x', $ship->x + $ship->size) && ($ship->x + $ship->size) <= 9) {
                     ShotModel::newShot($ship->x + $ship->size, $ship->y, $user->game->id, $user->id);

@@ -38,12 +38,7 @@ class ChatController extends Controller {
 
     public function sendMessage(int $id, MessageRequest $request): JsonResponse {
         $user = Auth::user();
-
-        $message          = new MessageModel();
-        $message->game_id = $id;
-        $message->user_id = $user->id;
-        $message->message = htmlspecialchars(mb_strimwidth($request->post('message'), 0, MessageModel::MESSAGE_MAX_LEN));
-        $message->saveOrFail();
+        MessageModel::newMessage($id, $user->id, $request->post('message'));
 
         return response()->json(['success' => true]);
     }

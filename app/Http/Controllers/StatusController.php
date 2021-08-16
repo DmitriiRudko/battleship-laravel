@@ -17,6 +17,7 @@ class StatusController {
 
     public function getGameStatus(ApiRequest $request): JsonResponse {
         $user = Auth::user();
+
         $info = [
             'game'       => [
                 'id'      => $user->game->id,

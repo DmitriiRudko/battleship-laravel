@@ -23,11 +23,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|MessageModel whereUserId($value)
  * @mixin \Eloquent
  */
-class MessageModel extends Model
-{
+class MessageModel extends Model {
     use HasFactory;
 
     public const MESSAGE_MAX_LEN = 250;
 
     protected $table = 'messages';
+
+    public static function newMessage(int $gameId, int $userId, $text) {
+        $message          = new self;
+        $message->game_id = $gameId;
+        $message->user_id = $userId;
+        $message->message = htmlspecialchars(mb_strimwidth($text, 0, self::MESSAGE_MAX_LEN));
+        $message->saveOrFail();
+
+        return $message;
+    }
 }
