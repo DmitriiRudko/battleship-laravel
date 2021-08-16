@@ -2,11 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\GameModel;
-use App\Models\UserModel;
 use App\Rules\ShipId;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class PlaceShipRequest extends FormRequest {
     /**

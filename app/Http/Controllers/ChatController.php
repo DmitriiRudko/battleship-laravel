@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ApiRequest;
+use App\Http\Requests\MessageRequest;
 use App\Models\MessageModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,10 +13,10 @@ class ChatController extends Controller {
         $timeNow = time();
         $user    = Auth::user();
 
-        if ($request->get('lastTime')) {
-            $messages = $user->game->scopeMessages($request->get('lastTime'));
-        } else {
+        if ($request->get('lastTime') === 'false') {
             $messages = $user->game->messages;
+        } else {
+            $messages = $user->game->scopeMessages($request->get('lastTime'));
         }
 
         $messages = array_map(function ($message) use ($user) {
@@ -35,13 +36,13 @@ class ChatController extends Controller {
         return response()->json($messages);
     }
 
-    public function sendMessage($id, ApiRequest $request): JsonResponse {
+    public function sendMessage(int $id, MessageRequest $request): JsonResponse {
         $user = Auth::user();
 
         $message          = new MessageModel();
         $message->game_id = $id;
         $message->user_id = $user->id;
-        $message->message = mb_strimwidth($request->post('message'), 0, MessageModel::MESSAGE_MAX_LEN);
+        $message->message = htmlspecialchars(mb_strimwidth($request->post('message'), 0, MessageModel::MESSAGE_MAX_LEN));
         $message->saveOrFail();
 
         return response()->json(['success' => true]);

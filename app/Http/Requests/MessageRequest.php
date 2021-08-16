@@ -3,20 +3,17 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class ApiRequest extends FormRequest {
+class MessageRequest extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize() {
-        if (Auth::user()) {
-            return Auth::user()->game->id === (int)$this->id;
-        } else {
-            return false;
-        }
+    public function authorize()
+    {
+        return true;
     }
 
     /**
@@ -24,10 +21,12 @@ class ApiRequest extends FormRequest {
      *
      * @return array
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             'id'   => 'numeric',
             'code' => 'alpha_num|size:13',
+            'message' => 'filled',
         ];
     }
 }

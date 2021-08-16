@@ -17,6 +17,7 @@ class PlaceShipController extends Controller {
     }
 
     public function action(int $id, PlaceShipRequest $request): JsonResponse {
+        $user        = Auth::user();
         $ships       = $request->post('ships');
         $ship        = $request->post('ship');
         $x           = $request->post('x');
@@ -24,12 +25,16 @@ class PlaceShipController extends Controller {
         $orientation = $request->post('orientation');
 
         if ($request->post('ships')) {
-            parse_str(urldecode($ships), $ships);
-            $ships = array_shift($ships);
-
             return $this->placeManyShips($id, $ships);
         } elseif (isset($x, $y)) {
-            return $this->placeShip($id, $ship, $orientation, $x, $y);
+            $size     = (int)explode('-', $ship)[0];
+            $number   = (int)explode('-', $ship)[1];
+            $sameShip = $user->ships->where('size', $size)->firstWhere('number', $number);
+            if (is_null($sameShip)) {
+                return $this->placeShip($id, $ship, $orientation, $x, $y);
+            } else {
+                return $this->turn($sameShip, $orientation);
+            }
         } else {
             return $this->removeShip($id, $ship);
         }
@@ -55,10 +60,10 @@ class PlaceShipController extends Controller {
 
     public function placeManyShips(int $id, array $ships): JsonResponse {
         foreach ($ships as $shipElement) {
-            $ship        = $shipElement->post('ship');
-            $x           = $shipElement->post('x');
-            $y           = $shipElement->post('y');
-            $orientation = $shipElement->post('orientation');
+            $ship        = $shipElement['ship'];
+            $x           = $shipElement['x'];
+            $y           = $shipElement['y'];
+            $orientation = $shipElement['orientation'];
             $this->placeShip($id, $ship, $orientation, $x, $y);
         }
 
@@ -77,6 +82,12 @@ class PlaceShipController extends Controller {
 
         $exists->delete();
 
+        return response()->json(['success' => true]);
+    }
+
+    public function turn(ShipModel $ship, string $newOrientation): JsonResponse {
+        $ship->orientation = $newOrientation;
+        $ship->saveOrFail();
         return response()->json(['success' => true]);
     }
 }

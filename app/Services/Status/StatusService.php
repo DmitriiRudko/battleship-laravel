@@ -3,7 +3,7 @@
 namespace App\Services\Status;
 
 class StatusService {
-    public static function getFieldInfo($myShips, $myShots, $enemyShips, $enemyShots) {
+    public function getFieldInfo($myShips, $myShots, $enemyShips, $enemyShots) {
         $fieldMy = array_fill(0, 10, array_fill(0, 10, [
             0 => 'empty',
             1 => 0,
@@ -24,7 +24,7 @@ class StatusService {
             }
         }
 
-        foreach ($myShots as $shot) {
+        foreach ($enemyShots as $shot) {
             $fieldMy[$shot->y][$shot->x][1] = 1;
         }
 
@@ -58,5 +58,10 @@ class StatusService {
             'fieldMy'    => $fieldMy,
             'fieldEnemy' => $fieldEnemy,
         ];
+    }
+
+    public function transpose(array $array) : array {
+        array_unshift($array, null);
+        return call_user_func_array('array_map', $array);
     }
 }

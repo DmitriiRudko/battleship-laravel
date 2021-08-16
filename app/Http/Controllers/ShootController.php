@@ -7,15 +7,29 @@ use App\Models\GameModel;
 use App\Models\ShotModel;
 use App\Services\Shoot\ShootService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ShootController extends Controller {
+    private ShootService $shootService;
+
+    public function __construct(ShootService $shootService) {
+        $this->shootService = $shootService;
+    }
+
     public function shoot(int $id, ShootRequest $request): JsonResponse {
         $user = Auth::user();
-        extract($request->post());
+        if ($user->game->turn !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'error'   => 400,
+                'message' => 'Not your turn',
+            ]);
+        }
 
-        if (ShootService::isVisibleCell($x, $y, $user->shots)) {
+        $x = $request->post('x');
+        $y = $request->post('y');
+
+        if ($this->shootService->isVisibleCell($x, $y, $user->shots)) {
             return response()->json([
                 'success' => false,
                 'error'   => 400,
@@ -23,9 +37,8 @@ class ShootController extends Controller {
             ]);
         }
 
-        $shootResult = ShootService::shoot($x, $y, $user->ships, $user->shots);
+        $shootResult = $this->shootService->shoot($x, $y, $user->enemy->ships);
 
-        extract($request->post());
         $shot          = new ShotModel();
         $shot->x       = $x;
         $shot->y       = $y;
@@ -33,11 +46,14 @@ class ShootController extends Controller {
         $shot->user_id = $user->id;
         $shot->saveOrFail();
 
-        $shots = $user->shots;
+        $shots = $user->shots()->get();
 
         if (isset($shootResult)) {
-            $total_health = array_reduce($user->ships, function ($carry, $item) use ($shots) {
-                $carry += ShootService::shipHealth($item, $shots);
+            if (!$this->shootService->shipHealth($shootResult, $shots)) {
+                $this->shootAroundShip($shootResult);
+            }
+            $total_health = array_reduce(iterator_to_array($user->enemy->ships), function ($carry, $item) use ($shots) {
+                $carry += $this->shootService->shipHealth($item, $shots);
                 return $carry;
             }, 0);
             if (!$total_health) {
@@ -58,30 +74,33 @@ class ShootController extends Controller {
         switch ($ship->orientation) {
             case 'vertical':
                 for ($i = $ship->y - 1; $i <= $ship->y + $ship->size; $i++) {
-                    $shot          = new ShotModel();
-                    $shot->y       = $i;
-                    $shot->game_id = $user->game->id;
-                    $shot->user_id = $user->id;
-
-                    if ($user->shots->where('x', $ship->x - 1)->firstWhere('y', $i)
+                    if (!$user->shots->where('x', $ship->x - 1)->firstWhere('y', $i)
                         && ($ship->x - 1) >= 0
                         && $i >= 0
                         && $i <= 9
                     ) {
-                        $shot->x = $ship->x - 1;
+                        $shot          = new ShotModel();
+                        $shot->y       = $i;
+                        $shot->game_id = $user->game->id;
+                        $shot->user_id = $user->id;
+                        $shot->x       = $ship->x - 1;
                         $shot->saveOrFail();
                     }
 
-                    if ($user->shots->where('x', $ship->x + 1)->firstWhere('y', $i)
+                    if (!$user->shots->where('x', $ship->x + 1)->firstWhere('y', $i)
                         && ($ship->x + 1) <= 9
                         && $i >= 0
                         && $i <= 9
                     ) {
-                        $shot->x = $ship->x + 1;
+                        $shot          = new ShotModel();
+                        $shot->y       = $i;
+                        $shot->game_id = $user->game->id;
+                        $shot->user_id = $user->id;
+                        $shot->x       = $ship->x + 1;
                         $shot->saveOrFail();
                     }
                 }
-                if ($user->shots->where('x', $ship->x)->firstWhere('y', $ship->y - 1) && ($ship->y - 1) >= 0) {
+                if (!$user->shots->where('x', $ship->x)->firstWhere('y', $ship->y - 1) && ($ship->y - 1) >= 0) {
                     $shot          = new ShotModel();
                     $shot->x       = $ship->x;
                     $shot->y       = $ship->y - 1;
@@ -89,10 +108,11 @@ class ShootController extends Controller {
                     $shot->user_id = $user->id;
                     $shot->saveOrFail();
                 }
-                if ($user->shots->where('x', $ship->x)->firstWhere('y', $ship->y + 1) && ($ship->y + 1) <= 9) {
+                if (!$user->shots->where('x', $ship->x)
+                        ->firstWhere('y', $ship->y + $ship->size) && ($ship->y + $ship->size) <= 9) {
                     $shot          = new ShotModel();
                     $shot->x       = $ship->x;
-                    $shot->y       = $ship->y + 1;
+                    $shot->y       = $ship->y + $ship->size;
                     $shot->game_id = $user->game->id;
                     $shot->user_id = $user->id;
                     $shot->saveOrFail();
@@ -100,30 +120,33 @@ class ShootController extends Controller {
                 break;
             case 'horizontal':
                 for ($j = $ship->x - 1; $j <= $ship->x + $ship->size; $j++) {
-                    $shot          = new ShotModel();
-                    $shot->x       = $j;
-                    $shot->game_id = $user->game->id;
-                    $shot->user_id = $user->id;
-
-                    if ($user->shots->where('y', $ship->y - 1)->firstWhere('x', $j)
+                    if (!$user->shots->where('y', $ship->y - 1)->firstWhere('x', $j)
                         && ($ship->y - 1) >= 0
                         && $j >= 0
                         && $j <= 9
                     ) {
-                        $shot->y = $ship->y - 1;
+                        $shot          = new ShotModel();
+                        $shot->x       = $j;
+                        $shot->game_id = $user->game->id;
+                        $shot->user_id = $user->id;
+                        $shot->y       = $ship->y - 1;
                         $shot->saveOrFail();
                     }
 
-                    if ($user->shots->where('y', $ship->y + 1)->firstWhere('x', $j)
+                    if (!$user->shots->where('y', $ship->y + 1)->firstWhere('x', $j)
                         && ($ship->y + 1) <= 9
                         && $j >= 0
                         && $j <= 9
                     ) {
-                        $shot->y = $ship->y + 1;
+                        $shot          = new ShotModel();
+                        $shot->x       = $j;
+                        $shot->game_id = $user->game->id;
+                        $shot->user_id = $user->id;
+                        $shot->y       = $ship->y + 1;
                         $shot->saveOrFail();
                     }
                 }
-                if ($user->shots->where('y', $ship->y)->firstWhere('x', $ship->x - 1) && ($ship->x - 1) >= 0) {
+                if (!$user->shots->where('y', $ship->y)->firstWhere('x', $ship->x - 1) && ($ship->x - 1) >= 0) {
                     $shot          = new ShotModel();
                     $shot->y       = $ship->y;
                     $shot->x       = $ship->x - 1;
@@ -131,10 +154,11 @@ class ShootController extends Controller {
                     $shot->user_id = $user->id;
                     $shot->saveOrFail();
                 }
-                if ($user->shots->where('y', $ship->y)->firstWhere('x', $ship->x + 1) && ($ship->x + 1) <= 9) {
+                if (!$user->shots->where('y', $ship->y)
+                        ->firstWhere('x', $ship->x + $ship->size) && ($ship->x + $ship->size) <= 9) {
                     $shot          = new ShotModel();
                     $shot->y       = $ship->y;
-                    $shot->x       = $ship->x + 1;
+                    $shot->x       = $ship->x + $ship->size;
                     $shot->game_id = $user->game->id;
                     $shot->user_id = $user->id;
                     $shot->saveOrFail();
