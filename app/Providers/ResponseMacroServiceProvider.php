@@ -2,13 +2,12 @@
 
 namespace App\Providers;
 
-use App\Services\PlaceShip\PlaceShipService;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider {
+class ResponseMacroServiceProvider extends ServiceProvider {
     /**
-     * Register any application services.
+     * Register services.
      *
      * @return void
      */
@@ -17,11 +16,13 @@ class AppServiceProvider extends ServiceProvider {
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      *
      * @return void
      */
     public function boot() {
-        // $this->app->singleton(PlaceShipService::class, fn($app) => new PlaceShipService());
+        Response::macro('success', function () {
+            return Response::json(['success' => true]);
+        });
     }
 }

@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ApiRequest;
 use App\Http\Requests\MessageRequest;
-use App\Models\MessageModel;
+use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 
 class ChatController extends Controller {
     public function loadMessages(ApiRequest $request): JsonResponse {
@@ -38,7 +39,7 @@ class ChatController extends Controller {
 
     public function sendMessage(int $id, MessageRequest $request): JsonResponse {
         $user = Auth::user();
-        MessageModel::newMessage($id, $user->id, $request->post('message'));
+        Message::newMessage($id, $user->id, $request->post('message'));
 
         return response()->json(['success' => true]);
     }

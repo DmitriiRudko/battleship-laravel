@@ -2,34 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GameResource;
 use Illuminate\Http\JsonResponse;
-use App\Models\GameModel;
-use App\Models\UserModel;
+use App\Models\Game;
+use App\Models\User;
 
 class StartController extends Controller {
-    public function newGame(): JsonResponse {
-        $initiator = new UserModel();
-        $invited   = new UserModel();
-        $game      = new GameModel();
+    public function newGame(): GameResource {
+        $initiator = User::newUser();
+        $invited   = User::newUser();
+        $game      = Game::newGame($initiator, $invited);
 
-        $initiator->code = uniqid();
-        $initiator->saveOrFail();
-
-        $invited->code = uniqid();
-        $invited->saveOrFail();
-
-        $game->initiator_id = $initiator->id;
-        $game->invited_id   = $invited->id;
-        $game->turn         = [$initiator->id, $invited->id][random_int(0, 1)];
-        $game->saveOrFail();
-
-        $gameInfo = [
-            'id'      => $game->id,
-            'code'    => $initiator->code,
-            'invited' => $invited->code,
-            'success' => true,
-        ];
-
-        return response()->json($gameInfo);
+        return response()->success(GameResource::make($game));
     }
 }

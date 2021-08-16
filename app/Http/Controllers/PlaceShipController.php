@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PlaceShipRequest;
 use App\Services\PlaceShip\PlaceShipService;
 use Illuminate\Http\JsonResponse;
-use App\Models\ShipModel;
+use App\Models\Ship;
 use Illuminate\Support\Facades\Auth;
 
 class PlaceShipController extends Controller {
@@ -56,7 +56,7 @@ class PlaceShipController extends Controller {
             ]);
         }
 
-        ShipModel::newShip($id, $user->id, $x, $y, $size, $number, $orientation);
+        Ship::newShip($id, $user->id, $x, $y, $size, $number, $orientation);
 
         return response()->json(['success' => true]);
     }
@@ -88,7 +88,7 @@ class PlaceShipController extends Controller {
         return response()->json(['success' => true]);
     }
 
-    public function turn(ShipModel $ship, string $newOrientation, $x, $y): JsonResponse {
+    public function turn(Ship $ship, string $newOrientation, $x, $y): JsonResponse {
         $user = Auth::user();
 
         $shipsExcludeThis = $user->ships->where('id', '!=', $ship->id);

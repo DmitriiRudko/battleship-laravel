@@ -14,6 +14,11 @@ class ClearFieldController extends Controller {
             $ship->delete();
         }
 
+
+        return response()->success();
+
+
+
         return response()->json(['success' => true]);
     }
 }

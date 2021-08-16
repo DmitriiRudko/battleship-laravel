@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\GameModel;
+use App\Models\Game;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +16,7 @@ class ShootRequest extends FormRequest {
         if (Auth::user()) {
             return Auth::user()->game->id === (int)$this->id
                 && Auth::user()->game->turn === Auth::user()->id
-                && Auth::user()->game->status === GameModel::GAME_HAS_BEGUN_STATUS;
+                && Auth::user()->game->status === Game::GAME_HAS_BEGUN_STATUS;
         } else {
             return false;
         }

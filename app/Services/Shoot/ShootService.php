@@ -2,7 +2,7 @@
 
 namespace App\Services\Shoot;
 
-use App\Models\ShipModel;
+use App\Models\Ship;
 
 class ShootService {
     public function isVisibleCell(int $x, int $y, $shots): bool {
@@ -10,7 +10,7 @@ class ShootService {
         return !is_null($shot);
     }
 
-    public function shoot(int $x, int $y, $ships): ?ShipModel {
+    public function shoot(int $x, int $y, $ships): ?Ship {
         $cell = null;
         foreach ($ships as $ship) {
             switch ($ship->orientation) {
