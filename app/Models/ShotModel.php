@@ -23,9 +23,18 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|ShotModel whereY($value)
  * @mixin \Eloquent
  */
-class ShotModel extends Model
-{
+class ShotModel extends Model {
     use HasFactory;
 
     protected $table = 'steps';
+
+    public static function newShot(int $x, int $y, int $gameId, int $userId): ShotModel {
+        $shot          = new self();
+        $shot->x       = $x;
+        $shot->y       = $y;
+        $shot->game_id = $gameId;
+        $shot->user_id = $userId;
+        $shot->saveOrFail();
+        return $shot;
+    }
 }
