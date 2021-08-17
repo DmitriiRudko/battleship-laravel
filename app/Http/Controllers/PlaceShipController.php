@@ -31,9 +31,8 @@ class PlaceShipController extends Controller {
             $size     = (int)explode('-', $ship)[0];
             $number   = (int)explode('-', $ship)[1];
             $sameShip = $user->ships->where('size', $size)->firstWhere('number', $number);
-
             if (is_null($sameShip)) {
-                return $this->placeShip($id, $ship, $orientation, $x, $y);
+                return $this->placeShip($id, $size, $number, $orientation, $x, $y);
             } else {
                 return $this->turn($sameShip, $orientation, $x, $y);
             }
@@ -43,34 +42,29 @@ class PlaceShipController extends Controller {
         }
     }
 
-    public function placeShip(int $id, string $ship, string $orientation, int $x, int $y): JsonResponse {
-        $user   = Auth::user();
-        $size   = (int)explode('-', $ship)[0];
-        $number = (int)explode('-', $ship)[1];
+    public function placeShip(int $id, int $size, int $number, string $orientation, int $x, int $y): JsonResponse {
+        $user = Auth::user();
 
         if (!$this->placeShipService->isShipValid($size, $number, $x, $y, $orientation, $user->id, $user->game->id, $user->ships)) {
-            return response()->json([
-                'success' => false,
-                'error'   => 400,
-                'message' => 'Ship is unable to place here',
-            ]);
+            return response()->error(400, 'Ship is unable to place here');
         }
 
         Ship::newShip($id, $user->id, $x, $y, $size, $number, $orientation);
 
-        return response()->json(['success' => true]);
+        return response()->success();
     }
 
     public function placeManyShips(int $id, array $ships): JsonResponse {
         foreach ($ships as $shipElement) {
-            $ship        = $shipElement['ship'];
+            $size     = (int)explode('-', $shipElement['ship'])[0];
+            $number   = (int)explode('-', $shipElement['ship'])[1];
             $x           = $shipElement['x'];
             $y           = $shipElement['y'];
             $orientation = $shipElement['orientation'];
-            $this->placeShip($id, $ship, $orientation, $x, $y);
+            $this->placeShip($id, $size, $number, $orientation, $x, $y);
         }
 
-        return response()->json(['success' => true]);
+        return response()->success();
     }
 
     public function removeShip(int $id, string $ship): JsonResponse {
@@ -85,7 +79,7 @@ class PlaceShipController extends Controller {
 
         $exists->delete();
 
-        return response()->json(['success' => true]);
+        return response()->success();
     }
 
     public function turn(Ship $ship, string $newOrientation, $x, $y): JsonResponse {
@@ -94,19 +88,15 @@ class PlaceShipController extends Controller {
         $shipsExcludeThis = $user->ships->where('id', '!=', $ship->id);
 
         if (!$this->placeShipService->isShipValid($ship->size, $ship->number, $x, $y, $newOrientation, $user->id, $user->game->id, $shipsExcludeThis)) {
-            return response()->json([
-                'success' => false,
-                'error'   => 400,
-                'message' => 'Ship is unable to place here',
-            ]);
+            return response()->error(400, 'Ship is unable to place here');
         }
 
         $ship->orientation = $newOrientation;
-        $ship->x = $x;
-        $ship->y = $y;
+        $ship->x           = $x;
+        $ship->y           = $y;
 
         $ship->saveOrFail();
 
-        return response()->json(['success' => true]);
+        return response()->success();
     }
 }

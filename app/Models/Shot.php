@@ -29,7 +29,7 @@ class Shot extends Model {
     protected $table = 'steps';
 
     public static function newShot(int $x, int $y, int $gameId, int $userId): Shot {
-        $shot          = new self();
+        $shot          = self::getModel();
         $shot->x       = $x;
         $shot->y       = $y;
         $shot->game_id = $gameId;

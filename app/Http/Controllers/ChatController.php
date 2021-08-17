@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ApiRequest;
 use App\Http\Requests\MessageRequest;
+use App\Http\Resources\ChatResource;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -20,21 +21,7 @@ class ChatController extends Controller {
             $messages = $user->game->scopeMessages($request->get('lastTime'));
         }
 
-        $messages = array_map(function ($message) use ($user) {
-            return [
-                'my'      => $message->user_id === $user->id,
-                'time'    => strtotime($message->time),
-                'message' => $message->message,
-            ];
-        }, iterator_to_array($messages));
-
-        $messages = [
-            'messages' => $messages,
-            'lastTime' => $timeNow,
-            'success'  => true,
-        ];
-
-        return response()->json($messages);
+        return response()->success(ChatResource::make($messages));
     }
 
     public function sendMessage(int $id, MessageRequest $request): JsonResponse {

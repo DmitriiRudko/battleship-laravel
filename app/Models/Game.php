@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use phpDocumentor\Reflection\Types\Self_;
 
 /**
  * App\Models\Game
@@ -42,13 +43,30 @@ class Game extends Model {
     public const GAME_OVER_STATUS = 3;
 
     public static function newGame(User $initiator, User $invited): self {
-        $game = self::getModel();
+        $game               = self::getModel();
         $game->initiator_id = $initiator->id;
         $game->invited_id   = $invited->id;
         $game->turn         = [$initiator->id, $invited->id][random_int(0, 1)];
         $game->saveOrFail();
 
         return $game;
+    }
+
+    public function gameOver(): void {
+        $this->status = self::GAME_OVER_STATUS;
+        $this->saveOrFail();
+    }
+
+    public function switchTurn(): void {
+        switch ($this->turn) {
+            case $this->initiator->id:
+                $this->turn = $this->invited->id;
+                break;
+            case $this->invited->id:
+                $this->turn = $this->initiator->id;
+                break;
+        }
+        $this->saveOrFail();
     }
 
     public function invited(): BelongsTo {

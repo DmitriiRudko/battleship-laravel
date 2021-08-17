@@ -8,7 +8,7 @@ use App\Models\Game;
 use App\Models\User;
 
 class StartController extends Controller {
-    public function newGame(): GameResource {
+    public function newGame(): JsonResponse {
         $initiator = User::newUser();
         $invited   = User::newUser();
         $game      = Game::newGame($initiator, $invited);
