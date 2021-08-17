@@ -57,6 +57,11 @@ class Game extends Model {
         $this->saveOrFail();
     }
 
+    public function startGame(): void {
+        $this->status = self::GAME_HAS_BEGUN_STATUS;
+        $this->saveOrFail();
+    }
+
     public function switchTurn(): void {
         switch ($this->turn) {
             case $this->initiator->id:

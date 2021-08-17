@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,8 +22,8 @@ class ResponseMacroServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
-        Response::macro('success', function () {
-            return Response::json(['success' => true]);
+        Response::macro('success', function ($res = []) {
+            return Response::json(array_merge(['success' => true], $res));
         });
 
         Response::macro('error', function ($code, $message) {

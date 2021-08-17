@@ -62,6 +62,11 @@ class User extends Model {
         return $user;
     }
 
+    public function getReady() {
+        $this->ready = self::READY_STATUS;
+        $this->saveOrFail();
+    }
+
     public function gameByInitiator(): HasOne {
         return $this->hasOne(Game::class, 'initiator_id');
     }

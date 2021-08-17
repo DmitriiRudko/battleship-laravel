@@ -56,8 +56,8 @@ class PlaceShipController extends Controller {
 
     public function placeManyShips(int $id, array $ships): JsonResponse {
         foreach ($ships as $shipElement) {
-            $size     = (int)explode('-', $shipElement['ship'])[0];
-            $number   = (int)explode('-', $shipElement['ship'])[1];
+            $size        = (int)explode('-', $shipElement['ship'])[0];
+            $number      = (int)explode('-', $shipElement['ship'])[1];
             $x           = $shipElement['x'];
             $y           = $shipElement['y'];
             $orientation = $shipElement['orientation'];
@@ -77,9 +77,12 @@ class PlaceShipController extends Controller {
             ->where('size', $size)
             ->firstWhere('number', $number);
 
-        $exists->delete();
-
-        return response()->success();
+        if ($exists) {
+            $exists->delete();
+            return response()->success();
+        } else {
+            return response()->error(400, 'Ship does not exist');
+        }
     }
 
     public function turn(Ship $ship, string $newOrientation, $x, $y): JsonResponse {

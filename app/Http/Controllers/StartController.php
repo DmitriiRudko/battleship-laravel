@@ -13,6 +13,6 @@ class StartController extends Controller {
         $invited   = User::newUser();
         $game      = Game::newGame($initiator, $invited);
 
-        return response()->success(GameResource::make($game));
+        return response()->success(GameResource::make($game)->resolve());
     }
 }

@@ -5,6 +5,7 @@ namespace App\Services\Shoot;
 use App\Models\Ship;
 use App\Models\Shot;
 use Illuminate\Support\Facades\Auth;
+use function React\Promise\reduce;
 
 class ShootService {
     public function isVisibleCell(int $x, int $y, $shots): bool {
@@ -31,7 +32,7 @@ class ShootService {
     }
 
     public function shipHealth($ship, $shots): int {
-        $hits = array_reduce(iterator_to_array($shots), function ($carry, $item) use ($ship) {
+        $hits = $shots->reduce(function ($carry, $item) use ($ship) {
             switch ($ship->orientation) {
                 case 'vertical':
                     $carry += ($item->y >= $ship->y && $item->y <= ($ship->y + $ship->size - 1) && $ship->x === $item->x) ? 1 : 0;
@@ -101,7 +102,7 @@ class ShootService {
 
     public function isOver($ships, $shots): bool {
         $total_health = $ships->reduce(function ($carry, $item) use ($shots) {
-            $carry += $this->shootService->shipHealth($item, $shots);
+            $carry += $this->shipHealth($item, $shots);
 
             return $carry;
         }, 0);
