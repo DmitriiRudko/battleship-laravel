@@ -1,0 +1,177 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Battleships API Documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://rudko-laravel/api",
+            "description": "Laravel API Swagger"
+        }
+    ],
+    "paths": {
+        "/chat-load/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Loads a messages from database",
+                "operationId": "Clear field",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    },
+                    {
+                        "name": "lastTime",
+                        "in": "query",
+                        "description": "Timestamp of the most recent message",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully cleared",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chat-send/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Sends a message to a user",
+                "operationId": "Clear field",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully cleared",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clear-field/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Removes all ships from the field",
+                "operationId": "Clear field",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully cleared",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/start": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Creates a new game",
+                "operationId": "Create a new game",
+                "responses": {
+                    "200": {
+                        "description": "New game created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "id",
+                                        "code",
+                                        "invited",
+                                        "success"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "int"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "61122735b150c"
+                                        },
+                                        "invited": {
+                                            "type": "strin",
+                                            "example": "6112273ab92c1"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "API",
+            "description": "Api methods"
+        }
+    ],
+    "security": [
+        []
+    ]
+}
