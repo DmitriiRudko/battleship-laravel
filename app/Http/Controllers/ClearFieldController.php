@@ -27,7 +27,9 @@ use Illuminate\Support\Facades\Auth;
  *     @OA\Response(
  *          response="200",
  *          description= "Successfully cleared",
- *          @OA\JsonContent(),
+ *          @OA\JsonContent(
+ *              @OA\Property(property="success", type="boolean", example="true"),
+ *          ),
  *     ),
  * ),
  */
