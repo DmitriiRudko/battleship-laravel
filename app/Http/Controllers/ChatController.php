@@ -58,11 +58,37 @@ use Illuminate\Support\Facades\Auth;
  *          required= true,
  *     ),
  *     @OA\RequestBody(
- *          required=true,
- *          description="Pass user credentials",
- *          @OA\Schema(
- *              type="array",
- *              @OA\Items(type="string"),
+ *         description="Список размещаемых кораблей в формате json",
+ *         @OA\MediaType(
+ *             mediaType="application/json",
+ *             @OA\Schema(
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(
+ *                         property="x",
+ *                         description="Позиция по горизонтали",
+ *                         type="integer"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="y",
+ *                         description="Позиция по вертикали",
+ *                         type="integer"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="ship",
+ *                         description="<Тип корабля>-<его номер>",
+ *                         type="string",
+ *                         example="1-1"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="orientation",
+ *                         description="Ориентация корабля на поле (vertical|horizontal)",
+ *                         type="string",
+ *                         example="horizontal"
+ *                     ),
+ *                 ),
+ *             ),
  *         ),
  *     ),
  *     @OA\Response(
