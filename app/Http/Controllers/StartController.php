@@ -17,10 +17,9 @@ use App\Models\User;
  *          response="200",
  *          description= "New game created successfully",
  *          @OA\JsonContent(
- *              required={"id", "code", "invited", "success"},
- *              @OA\Property(property="id", type="int"),
+ *              @OA\Property(property="id", type="integer"),
  *              @OA\Property(property="code", type="string", example="61122735b150c"),
- *              @OA\Property(property="invited", type="strin", example="6112273ab92c1"),
+ *              @OA\Property(property="invited", type="string", example="6112273ab92c1"),
  *              @OA\Property(property="success", type="boolean", example="true"),
  *          ),
  *     ),

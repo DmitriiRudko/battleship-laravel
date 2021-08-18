@@ -12,12 +12,12 @@
     ],
     "paths": {
         "/chat-load/{id}/{code}": {
-            "post": {
+            "get": {
                 "tags": [
                     "API"
                 ],
                 "summary": "Loads a messages from database",
-                "operationId": "Clear field",
+                "operationId": "Load messages",
                 "parameters": [
                     {
                         "name": "id",
@@ -40,10 +40,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully cleared",
+                        "description": "Chat loaded successfully",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "properties": {
+                                        "messages": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "my": {
+                                                        "type": "boolean",
+                                                        "example": "true"
+                                                    },
+                                                    "time": {
+                                                        "type": "integer",
+                                                        "example": "1495517526"
+                                                    },
+                                                    "message": {
+                                                        "type": "string",
+                                                        "example": "Hello, World!"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "lastTime": {
+                                            "type": "integer",
+                                            "example": "61122735b150c"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -56,7 +88,7 @@
                     "API"
                 ],
                 "summary": "Sends a message to a user",
-                "operationId": "Clear field",
+                "operationId": "Send message",
                 "parameters": [
                     {
                         "name": "id",
@@ -72,15 +104,37 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Pass user credentials",
-                    "required": true
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "description": "Message to send (250 characters limit)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
                 },
                 "responses": {
                     "200": {
-                        "description": "Successfully cleared",
+                        "description": "Message sent successfully",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -120,6 +174,162 @@
                 }
             }
         },
+        "/place-ship/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Places/removes/turns/replaces ship",
+                "operationId": "Place ship",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "x": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "y": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "ship": {
+                                        "type": "strind",
+                                        "example": "1-1"
+                                    },
+                                    "orientation": {
+                                        "type": "string",
+                                        "example": "vertical"
+                                    },
+                                    "ships": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "x": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "y": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "ship": {
+                                                    "type": "string",
+                                                    "example": "1-1"
+                                                },
+                                                "orientation": {
+                                                    "type": "string",
+                                                    "example": "vertical"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shot/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Shoots",
+                "operationId": "Shots",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "x",
+                                    "y"
+                                ],
+                                "properties": {
+                                    "x": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "y": {
+                                        "type": "integer",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/start": {
             "post": {
                 "tags": [
@@ -133,24 +343,137 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "required": [
-                                        "id",
-                                        "code",
-                                        "invited",
-                                        "success"
-                                    ],
                                     "properties": {
                                         "id": {
-                                            "type": "int"
+                                            "type": "integer"
                                         },
                                         "code": {
                                             "type": "string",
                                             "example": "61122735b150c"
                                         },
                                         "invited": {
-                                            "type": "strin",
+                                            "type": "string",
                                             "example": "6112273ab92c1"
                                         },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/status/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Retrieves game info",
+                "operationId": "Retrieve status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chat loaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "game": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "9"
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "invite": {
+                                                    "type": "string",
+                                                    "example": "aeGt81HUEn"
+                                                },
+                                                "myTurn": {
+                                                    "type": "boolean",
+                                                    "example": "true"
+                                                },
+                                                "meReady": {
+                                                    "type": "boolean",
+                                                    "example": "true"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "fieldMy": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "fieldEnemy": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "usedPlaces": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ready/{id}/{code}": {
+            "post": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Get user ready",
+                "operationId": "User ready",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Game id",
+                        "required": true
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "The user's code",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chat loaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
                                         "success": {
                                             "type": "boolean",
                                             "example": "true"

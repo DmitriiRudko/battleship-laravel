@@ -8,6 +8,70 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Ship;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Post(
+ *     path= "/place-ship/{id}/{code}",
+ *     operationId = "Place ship",
+ *     tags= {"API"},
+ *     summary = "Places/removes/turns/replaces ship",
+ *     @OA\Parameter(
+ *          name= "id",
+ *          in= "path",
+ *          description= "Game id",
+ *          required= true,
+ *     ),
+ *     @OA\Parameter(
+ *          name= "code",
+ *          in= "path",
+ *          description= "The user's code",
+ *          required= true,
+ *     ),
+ *     @OA\RequestBody(
+ *          @OA\MediaType(
+ *              mediaType="multipart/form-data",
+ *              @OA\Schema(
+ *                  @OA\Property(
+ *                      property="x",
+ *                      type="integer",
+ *                      example=0,
+ *                  ),
+ *                  @OA\Property(
+ *                      property="y",
+ *                      type="integer",
+ *                      example=0,
+ *                  ),
+ *                  @OA\Property(
+ *                      property="ship",
+ *                      type="strind",
+ *                      example= "1-1",
+ *                  ),
+ *                  @OA\Property(
+ *                      property="orientation",
+ *                      type="string",
+ *                      example="vertical",
+ *                  ),
+ *                  @OA\Property(
+ *                      property="ships",
+ *                      type="array",
+ *                      @OA\Items(
+ *                          @OA\Property(property="x", type="integer", example=0),
+ *                          @OA\Property(property="y", type="integer", example=0),
+ *                          @OA\Property(property="ship", type="string", example="1-1"),
+ *                          @OA\Property(property="orientation", type="string", example="vertical"),
+ *                      ),
+ *                  ),
+ *              ),
+ *          ),
+ *     ),
+ *     @OA\Response(
+ *          response="200",
+ *          description= "OK",
+ *          @OA\JsonContent(
+ *              @OA\Property(property="success", type="boolean", example="true"),
+ *          ),
+ *     ),
+ * ),
+ */
 class PlaceShipController extends Controller {
 
     private PlaceShipService $placeShipService;

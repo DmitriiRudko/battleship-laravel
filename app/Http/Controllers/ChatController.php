@@ -10,9 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * @OA\Post(
+ * @OA\Get(
  *     path= "/chat-load/{id}/{code}",
- *     operationId = "Clear field",
+ *     operationId = "Load messages",
  *     tags= {"API"},
  *     summary = "Loads a messages from database",
  *     @OA\Parameter (
@@ -35,14 +35,26 @@ use Illuminate\Support\Facades\Auth;
  *     ),
  *     @OA\Response(
  *          response="200",
- *          description= "Successfully cleared",
- *          @OA\JsonContent(),
+ *          description= "Chat loaded successfully",
+ *          @OA\JsonContent(
+ *              @OA\Property(
+ *                  property="messages",
+ *                  type="array",
+ *                  @OA\Items(
+ *                      @OA\Property(property="my", type="boolean", example="true"),
+ *                      @OA\Property(property="time", type="integer", example="1495517526"),
+ *                      @OA\Property(property="message", type="string", example="Hello, World!"),
+ *                  ),
+ *              ),
+ *              @OA\Property(property="lastTime", type="integer", example="61122735b150c"),
+ *              @OA\Property(property="success", type="boolean", example="true"),
+ *          ),
  *     ),
  * ),
  *
  * @OA\Post(
  *     path= "/chat-send/{id}/{code}",
- *     operationId = "Clear field",
+ *     operationId = "Send message",
  *     tags= {"API"},
  *     summary = "Sends a message to a user",
  *     @OA\Parameter (
@@ -58,43 +70,24 @@ use Illuminate\Support\Facades\Auth;
  *          required= true,
  *     ),
  *     @OA\RequestBody(
- *         description="Список размещаемых кораблей в формате json",
- *         @OA\MediaType(
- *             mediaType="application/json",
- *             @OA\Schema(
- *                 type="array",
- *                 @OA\Items(
- *                     type="object",
- *                     @OA\Property(
- *                         property="x",
- *                         description="Позиция по горизонтали",
- *                         type="integer"
- *                     ),
- *                     @OA\Property(
- *                         property="y",
- *                         description="Позиция по вертикали",
- *                         type="integer"
- *                     ),
- *                     @OA\Property(
- *                         property="ship",
- *                         description="<Тип корабля>-<его номер>",
- *                         type="string",
- *                         example="1-1"
- *                     ),
- *                     @OA\Property(
- *                         property="orientation",
- *                         description="Ориентация корабля на поле (vertical|horizontal)",
- *                         type="string",
- *                         example="horizontal"
- *                     ),
- *                 ),
- *             ),
- *         ),
+ *          @OA\MediaType(
+ *              mediaType="multipart/form-data",
+ *              @OA\Schema(
+ *                  required={"message"},
+ *                  @OA\Property(
+ *                      property="message",
+ *                      type="string",
+ *                      description="Message to send (250 characters limit)",
+ *                  ),
+ *              ),
+ *          ),
  *     ),
  *     @OA\Response(
  *          response="200",
- *          description= "Successfully cleared",
- *          @OA\JsonContent(),
+ *          description= "Message sent successfully",
+ *          @OA\JsonContent(
+ *              @OA\Property(property="success", type="boolean", example="true"),
+ *          ),
  *     ),
  * ),
  */
