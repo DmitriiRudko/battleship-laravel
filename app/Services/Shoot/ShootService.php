@@ -48,8 +48,34 @@ class ShootService {
         return $ship->size - $hits;
     }
 
-    public function shootAroundShip($ship) {
-        $user = Auth::user();
+    public function shootAroundShip($ship, $shots) {
+        $i     = $ship->y - 1;
+        $j     = $ship->x - 1;
+        $user  = Auth::user();
+        $shots = [];
+        $dx    = [1, 0, -1, 0];
+        $dy    = [0, 1, 0, -1];
+        $field = array_fill(0, 10, array_fill(0, 10, 0));
+
+        foreach ($shots as $shot) {
+            $field[$shot->y][$shot->x] = 1;
+        }
+
+        switch ($ship->orientation) {
+            case 'vertical':
+                do {
+                    if (!$field[$i][$j]) {
+                        array_push($shots, [$i, $j]);
+                    }
+                  //  if ($i === )
+                    $i += $dy[0];
+                    $j += $dx[0];
+                } while (($i !== $ship->x - 1) && ($j !== $ship->y - 1));
+                break;
+            case 'horizontal':
+                break;
+        }
+
 
         switch ($ship->orientation) {
             case 'vertical':

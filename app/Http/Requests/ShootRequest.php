@@ -13,13 +13,7 @@ class ShootRequest extends FormRequest {
      * @return bool
      */
     public function authorize() {
-        if (Auth::user()) {
-            return Auth::user()->game->id === (int)$this->id
-                && Auth::user()->game->turn === Auth::user()->id
-                && Auth::user()->game->status === Game::GAME_HAS_BEGUN_STATUS;
-        } else {
-            return false;
-        }
+        return true;
     }
 
     /**

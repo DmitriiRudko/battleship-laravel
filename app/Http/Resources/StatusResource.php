@@ -12,7 +12,8 @@ class StatusResource extends JsonResource {
      * @param \Illuminate\Http\Request $request
      * @return array
      */
-    public function toArray($info) {
+
+    public function toArray($request): array {
         $user = Auth::user();
 
         return [
@@ -26,7 +27,7 @@ class StatusResource extends JsonResource {
                 'meReady' => (bool)$user->ready,
             ],
             'success'    => true,
-            'usedPlaces' => $user->ships->map(fn($ship) => $ship->size . '-' . $ship->number),//array_map(fn($ship) => $ship->size . '-' . $ship->number, iterator_to_array($user->ships)),
+            'usedPlaces' => $user->ships->map(fn($ship) => $ship->size . '-' . $ship->number),
         ];
     }
 }

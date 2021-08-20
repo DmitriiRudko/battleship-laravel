@@ -30,11 +30,11 @@ class Message extends Model {
 
     protected $table = 'messages';
 
-    public static function newMessage(int $gameId, int $userId, $text) {
+    public static function newMessage(int $gameId, int $userId, string $text): self {
         $message          = self::getModel();
         $message->game_id = $gameId;
         $message->user_id = $userId;
-        $message->message = htmlspecialchars(mb_strimwidth($text, 0, self::MESSAGE_MAX_LEN));
+        $message->message = $text;
         $message->saveOrFail();
 
         return $message;

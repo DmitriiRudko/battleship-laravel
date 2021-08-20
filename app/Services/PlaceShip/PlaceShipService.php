@@ -2,8 +2,6 @@
 
 namespace App\Services\PlaceShip;
 
-use Illuminate\Support\Facades\Auth;
-use phpDocumentor\Reflection\DocBlock\Tags\BaseTag;
 
 class PlaceShipService {
     public function isShipValid(int $shipSize, int $shipNumber, int $x, int $y, string $orientation, int $userId, int $gameId, $ships): bool {

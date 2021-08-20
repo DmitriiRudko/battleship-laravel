@@ -86,7 +86,7 @@ class Game extends Model {
         return $this->hasMany(Message::class, 'game_id');
     }
 
-    public function scopeMessages($timestamp): Collection {
+    public function rangeMessages(int $timestamp): Collection {
         return $this->messages()->where('time', '>', date('Y-m-d H:i:s', $timestamp))->get();
     }
 }

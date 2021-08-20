@@ -64,9 +64,6 @@ class ShootController extends Controller {
 
     public function shoot(int $id, ShootRequest $request): JsonResponse {
         $user = Auth::user();
-        if ($user->game->turn !== $user->id || $user->game->status === Game::GAME_HAS_NOT_BEGUN_STATUS) {
-            return response()->error(400, 'Not your turn');
-        }
 
         $x = $request->post('x');
         $y = $request->post('y');
@@ -77,7 +74,7 @@ class ShootController extends Controller {
 
         $shootResult = $this->shootService->shoot($x, $y, $user->enemy->ships);
 
-        $shot = Shot::newShot($x, $y, $id, $user->id);
+        Shot::newShot($x, $y, $id, $user->id);
 
         $shots = $user->shots()->get();
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Message;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,6 +13,10 @@ class ChatResource extends JsonResource {
      * @param \Illuminate\Http\Request $request
      * @return array
      */
+
+    /** @var Message */
+    public $resource;
+
     public function toArray($request): array {
         $user = Auth::user();
 

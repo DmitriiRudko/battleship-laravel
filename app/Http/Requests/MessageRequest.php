@@ -2,17 +2,16 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Message;
 use Illuminate\Foundation\Http\FormRequest;
 
-class MessageRequest extends FormRequest
-{
+class MessageRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
-    {
+    public function authorize() {
         return true;
     }
 
@@ -21,12 +20,15 @@ class MessageRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            'id'   => 'numeric',
-            'code' => 'alpha_num|size:13',
+            'id'      => 'numeric',
+            'code'    => 'alpha_num|size:13',
             'message' => 'filled',
         ];
+    }
+
+    protected function prepareForValidation() {
+        $this->message = htmlspecialchars(mb_strimwidth($this->message, 0, Message::MESSAGE_MAX_LEN));
     }
 }

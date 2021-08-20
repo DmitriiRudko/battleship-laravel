@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ApiRequest;
 use App\Http\Requests\MessageRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -92,13 +92,13 @@ use Illuminate\Support\Facades\Auth;
  * ),
  */
 class ChatController extends Controller {
-    public function loadMessages(ApiRequest $request): JsonResponse {
+    public function loadMessages(Request $request): JsonResponse {
         $user = Auth::user();
 
         if ($request->get('lastTime') === 'false') {
             $messages = $user->game->messages;
         } else {
-            $messages = $user->game->scopeMessages($request->get('lastTime'));
+            $messages = $user->game->rangeMessages($request->get('lastTime'));
         }
 
         return response()->success(ChatResource::make($messages)->resolve());

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource {
@@ -11,7 +12,11 @@ class UserResource extends JsonResource {
      * @param \Illuminate\Http\Request $request
      * @return array
      */
-    public function toArray($request) {
+
+    /** @var User */
+    public $resource;
+
+    public function toArray($request): array {
         return [
             'enemyReady' => (bool)$this->enemy->ready,
         ];

@@ -23,4 +23,4 @@ Route::post('/chat-send/{id}/{code}/', [ChatController::class, 'sendMessage'])->
 
 Route::post('/status/{id}/{code}/', [StatusController::class, 'getGameStatus'])->middleware('authenticated');
 
-Route::post('/shot/{id}/{code}/', [ShootController::class, 'shoot'])->middleware('authenticated');
+Route::post('/shot/{id}/{code}/', [ShootController::class, 'shoot'])->middleware('api');

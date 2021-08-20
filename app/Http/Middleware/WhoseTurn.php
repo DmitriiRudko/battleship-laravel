@@ -2,11 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Game;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class DenieIfNotAuthenticated {
+class WhoseTurn {
     /**
      * Handle an incoming request.
      *
@@ -15,15 +16,11 @@ class DenieIfNotAuthenticated {
      * @return mixed
      */
     public function handle(Request $request, Closure $next) {
-        if (Auth::user()) {
-            if (Auth::user()->game->id === (int)$request->id) {
-                return $next($request);
-            }
+        $user = Auth::user();
+        if ($user->game->turn !== $user->id) {
+            return response()->error(403, 'Not your turn');
         }
-        return [
-            'success' => false,
-            'error'   => 403,
-            'message' => 'User unauthorized',
-        ];
+
+        return $next($request);
     }
 }

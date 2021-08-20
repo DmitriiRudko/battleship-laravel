@@ -55,6 +55,14 @@ class User extends Model {
         }
     }
 
+    public function gameByInitiator(): HasOne {
+        return $this->hasOne(Game::class, 'initiator_id');
+    }
+
+    public function gameByInvited(): HasOne {
+        return $this->hasOne(Game::class, 'invited_id');
+    }
+
     public static function newUser(): self {
         $user       = self::getModel();
         $user->code = uniqid();
@@ -62,17 +70,9 @@ class User extends Model {
         return $user;
     }
 
-    public function getReady() {
+    public function getReady(): void {
         $this->ready = self::READY_STATUS;
         $this->saveOrFail();
-    }
-
-    public function gameByInitiator(): HasOne {
-        return $this->hasOne(Game::class, 'initiator_id');
-    }
-
-    public function gameByInvited(): HasOne {
-        return $this->hasOne(Game::class, 'invited_id');
     }
 
     public function ships(): HasMany {

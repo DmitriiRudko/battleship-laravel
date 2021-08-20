@@ -34,7 +34,7 @@ class Ship extends Model {
 
     protected $table = 'warships';
 
-    public static function newShip($id, $userId, $x, $y, $size, $number, $orientation): self {
+    public static function newShip(int $id, int $userId, int $x, int $y, int $size, int $number, string $orientation): self {
         $shipModel              = new self();
         $shipModel->game_id     = $id;
         $shipModel->user_id     = $userId;

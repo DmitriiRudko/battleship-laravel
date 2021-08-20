@@ -2,7 +2,9 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\DenieIfNotAuthenticated;
+use App\Http\Middleware\BeforeDenieIfNotAuthenticated;
+use App\Http\Middleware\HasAlreadyBegun;
+use App\Http\Middleware\WhoseTurn;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -41,8 +43,9 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-//            'throttle:api',
-//            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            WhoseTurn::class,
+            HasAlreadyBegun::class,
+            BeforeDenieIfNotAuthenticated::class,
         ],
     ];
 
@@ -63,6 +66,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'authenticated' => DenieIfNotAuthenticated::class,
+        'authenticated' => BeforeDenieIfNotAuthenticated::class,
+        'turn' => WhoseTurn::class,
+        'game.begun' => HasAlreadyBegun::class,
     ];
 }
