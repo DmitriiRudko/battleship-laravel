@@ -4,7 +4,7 @@ namespace App\Services\PlaceShip;
 
 
 class PlaceShipService {
-    public function isShipValid(int $shipSize, int $shipNumber, int $x, int $y, string $orientation, int $userId, int $gameId, $ships): bool {
+    public function isShipValid(int $shipSize, int $shipNumber, int $x, int $y, string $orientation, int $userId, int $gameId, $ships): bool   {
         return !$this->isShipExist($shipSize, $shipNumber, $ships, $userId, $gameId)
             && $this->isShipFitsTheField($shipSize, $x, $y, $orientation)
             && $this->isShipFitsOtherShips($shipSize, $x, $y, $orientation, $ships);
